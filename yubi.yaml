@@ -1,0 +1,250 @@
+units:
+  board_rotate: 0
+
+  pinky_stagger: -0.375U
+  ring_stagger: 0.625U
+  middle_stagger: 0.25U
+  index_stagger: -0.25U
+  inner_stagger: -0.25U
+
+  encoder_rotate: -8
+  encoder_spread: 46.1598
+  encoder_stagger: -1.8958
+
+  thumb_left_rotate: 15
+  thumb_left_spread: 69.9021
+  thumb_left_stagger: -2.7099
+  
+  thumb_center_rotate: -15
+  thumb_center_spread: 20.5847
+  thumb_center_stagger: -2.7099
+  
+  thumb_right_rotate: -15
+  thumb_right_spread: 18.119
+  thumb_right_stagger: -11.9104
+
+points:
+  rotate: board_rotate
+  key:
+    tags:
+      mx: true
+    footprints:
+      diode:
+        type: diode
+        nets:
+          from: =colrow
+          to: =row_net
+        anchor:
+          rotate: 45
+          shift: [ 0.3U, -0.25U ]
+  zones:
+    finger:
+      key:
+        footprints:
+          mx_hotswap:
+            type: mx
+            nets:
+              from: =column_net
+              to: =colrow
+            params:
+              keycaps: true
+              hotswap: true
+              reverse: true
+      columns:
+        outer:
+          key:
+            column_net: COL0
+        pinky:
+          key:
+            column_net: COL1
+            stagger: pinky_stagger
+          rows.bottom.skip: true
+        ring:
+          key:
+            column_net: COL2
+            stagger: ring_stagger
+          rows.bottom.skip: true
+        middle:
+          key:
+            column_net: COL3
+            stagger: middle_stagger
+          rows.bottom.skip: true
+        index:
+          key:
+            column_net: COL4
+            stagger: index_stagger
+          rows.bottom.skip: true
+        inner:
+          key:
+            column_net: COL5
+            stagger: inner_stagger
+          rows:
+            bottom.skip: true
+            upper:
+              bind: [ 0,3,1,0]
+      rows:
+        bottom:
+          bind: [ 0,100,0,0 ]
+          row_net: ROW3
+        lower:
+          bind: [ 0,3,11,0 ]
+          row_net: ROW2
+        home:
+          bind: [ 0,3,1,0 ]
+          row_net: ROW1
+        upper:
+          bind: [ 0,1,1,1 ]
+          row_net: ROW0
+    encoder:
+      anchor:
+        ref: finger_outer_bottom
+      key:
+        column_net: COL1
+        row_net: ROW3
+        footprints:
+          rotary_encoder:
+            anchor:
+              rotate: 180
+            type: rotary
+            nets:
+              from: =colrow
+              to: =column_net
+              A: EA
+              B: EB
+              C: GND
+          diode:
+            type: diode
+            nets:
+              from: =colrow
+              to: =row_net
+            anchor:
+              ref: finger_outer_bottom
+              rotate: 45
+              shift: [ 1.75U, -0.25U ]
+          jumper:
+            type: jstph
+            nets:
+              pos: GND
+              neg: GND
+        tags:
+          enc: true
+          mx: false
+      columns:
+        encoder:
+          key:
+            rotate: encoder_rotate
+            spread: encoder_spread
+            stagger: encoder_stagger
+      rows:
+        bottom:
+          bind: [ 0,55,0.5,30 ]
+    thumb:
+      anchor:
+        ref: finger_outer_bottom
+      key:
+        footprints:
+          mx_hotswap:
+            type: mx
+            nets:
+              from: =column_net
+              to: =colrow
+            params:
+              keycaps: true
+              hotswap: true
+              reverse: true
+        row_net: ROW3
+      columns:
+        left:
+          key:
+            column_net: COL2
+            rotate: thumb_left_rotate
+            spread: thumb_left_spread
+            stagger: thumb_left_stagger
+        center:
+          key:
+            column_net: COL3
+            rotate: thumb_center_rotate
+            spread: thumb_center_spread
+            stagger: thumb_center_stagger
+        right:
+          key:
+            column_net: COL4
+            rotate: thumb_right_rotate
+            spread: thumb_right_spread
+            stagger: thumb_right_stagger
+          rows:
+            home:
+              bind: [ 0,0,0,0 ]
+            top:
+              bind: [ 0,0,1,5 ]
+              key:
+                column_net: COL5
+      rows:
+        home:
+          bind: [ 0,0,0,0 ]
+outlines:
+  exports:
+    raw:
+      - type: polygon
+        points:
+          - shift: [ -0.5U, -0.5U ]
+          - shift: [ 0U, 4U ]
+          - shift: [ 3U, 0.5U ]
+          - shift: [ 1U, 0U ]
+          - shift: [ 2U, -10 ]
+          - shift: [ 3, 0U ]
+          - shift: [ 0U, -4.5U -1 ]
+          - shift: [ -4U, 11 ]
+      - type: rectangle
+        operation: add
+        anchor:
+          ref: thumb_right_home
+          shift: [ -0.5U, -0.5U ]
+        size: [ 1U,2U ]
+      - type: keys
+        operation: 
+        side: left
+        size: 0.95U
+        bound: false
+    cutout:
+      - type: outline
+        name: raw
+        fillet: 2
+    keycap_outlines:
+      - type: keys
+        side: left
+        size: 0.95U
+        bound: false
+        tags:
+          - mx
+      - type: circle
+        anchor:
+          ref: encoder_encoder_bottom
+        radius: 0.5u
+    plate:
+      - type: outline
+        name: raw
+        fillet: 1
+      - type: keys
+        operation: stack
+        side: left
+        size: 14
+        bound: false
+        tags:
+          - mx
+      - type: circle
+        operation: stack
+        anchor:
+          ref: encoder_encoder_bottom
+        radius: 7
+pcbs:
+  yubi:
+    outlines:
+      edge:
+        outline: cutout
+      key_outlines_f:
+        outline: keycap_outlines
+        layer: F.SilkS
+      key_outlines_b:
+        outline: keycap_outlines
+        layer: B.SilkS
